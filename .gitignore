@@ -1,0 +1,10 @@
+# Ignorar datos grandes
+data/
+*.csv
+*.zip
+*.parquet
+
+
+# Ignorar caché de python
+__pycache__/
+.ipynb_checkpoints/
