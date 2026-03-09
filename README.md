@@ -2,7 +2,7 @@
 
 Master's Thesis: implementation of Deep Learning and Ensemble models for Financial Fraud Detection using Imbalanced Data Techniques
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 + Descripción del Proyecto
 Este proyecto investiga la eficacia de distintos algoritmos de Machine Learning y Deep Learning para la detección de fraude financiero. El estudio se centra en el manejo de conjuntos de datos desbalanceados, la selección de características y la optimización de hiperparámetros para mejorar la precisión en la detección de transacciones fraudulentas.
@@ -39,7 +39,7 @@ Cristhian Enrique Córdoba Trillos
 
 Estudiante de Maestría en Ing. de Sistemas y Ciencias de la Computación.
 
-LinkedIn: [[Tu enlace]](https://www.linkedin.com/in/reconcordoba/)
+LinkedIn: [[reconcordoba]](https://www.linkedin.com/in/reconcordoba/)
 
 Correo: cecordobat@unal.edu.co
 
