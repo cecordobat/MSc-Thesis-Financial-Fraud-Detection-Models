@@ -25,9 +25,11 @@ Entorno: Archivos python, Jupyter Notebook.
 
 + Instalación y Uso
 Clonar el repositorio:
-git clone https://github.com/tu-usuario/MSc-Financial-Fraud-Detection-Models.git
+git clone https://github.com/cecordobat/MSc-Financial-Fraud-Detection-Models.git
+
 Crear un entorno virtual:
 python -m venv venvsource venv/bin/activate  # En Windows: venv\Scripts\activate
+
 Instalar dependencias:
 pip install -r requirements.txt
 
