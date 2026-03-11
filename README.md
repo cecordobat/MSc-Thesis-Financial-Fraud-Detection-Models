@@ -2,7 +2,7 @@
 
 Master's Thesis: implementation of Deep Learning and Ensemble models for Financial Fraud Detection using Imbalanced Data Techniques
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 + Descripción del Proyecto
 Este proyecto investiga la eficacia de distintos algoritmos de Machine Learning y Deep Learning para la detección de fraude financiero. El estudio se centra en el manejo de conjuntos de datos desbalanceados, la selección de características y la optimización de hiperparámetros para mejorar la precisión en la detección de transacciones fraudulentas.
@@ -25,9 +25,11 @@ Entorno: Archivos python, Jupyter Notebook.
 
 + Instalación y Uso
 Clonar el repositorio:
-git clone https://github.com/tu-usuario/MSc-Financial-Fraud-Detection-Models.git
+git clone https://github.com/cecordobat/MSc-Financial-Fraud-Detection-Models.git
+
 Crear un entorno virtual:
 python -m venv venvsource venv/bin/activate  # En Windows: venv\Scripts\activate
+
 Instalar dependencias:
 pip install -r requirements.txt
 
