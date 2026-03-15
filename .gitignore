@@ -3,6 +3,7 @@
 *.csv
 *.zip
 *.parquet
+*.txt
 
 
 # Ignorar caché de python
