@@ -1,11 +1,24 @@
 # Ignorar datos grandes
 #data/
+artifacts/*
+models/*
 *.csv
-*.zip
 *.parquet
+*.zip
 *.txt
 
 
 # Ignorar caché de python
 __pycache__/
 .ipynb_checkpoints/
+
+
+.env
+.env.*
+!.env.example
+
+data/original/*
+data/interim/*
+data/processed/*
+data/external/*
+

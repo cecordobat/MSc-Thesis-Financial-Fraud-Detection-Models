@@ -3,12 +3,9 @@
 ```
 MSc-Thesis-Financial-Fraud-Detection-Models/
 │
-├── README.md                          # Documentación principal del proyecto
-├── LICENSE                            # Licencia MIT
-├── requirements.txt                   # Dependencias de Python
-├── .env                              # Variables de entorno (API keys, etc.)
-├── .git/                             # Control de versiones Git
-├── .gitignore                        # Archivos ignorados por Git
+├── configs/                          # Configuraciones y variables de entorno
+│   ├── .gitkeep                      # Mantener carpeta en git
+│   └── paths.example.env             # Ejemplo de configuración de rutas
 │
 ├── data/                             # Carpeta de datos
 │   ├── original/                     # Datos crudos originales
@@ -18,6 +15,9 @@ MSc-Thesis-Financial-Fraud-Detection-Models/
 │   │   ├── muestra_accounts.csv      # Muestra de cuentas
 │   │   ├── muestra_patterns.csv      # Muestra de patrones
 │   │   └── muestra_tranx.csv         # Muestra de transacciones
+│   │
+│   ├── interim/                      # Datos intermedios (procesamiento temporal)
+│   │   └── .gitkeep                  # Mantener carpeta en git
 │   │
 │   └── processed/                    # Datos procesados y listos para modelos
 │       └── HI-Large_accounts_limpio.parquet  # Cuentas procesadas
@@ -32,52 +32,33 @@ MSc-Thesis-Financial-Fraud-Detection-Models/
 │   └── Universidad_Nacional_de_Colombia_Coat_of_Arms_Redesign_Green_(2016).svg
 │
 ├── src/                              # Código fuente modular
+│   ├── data/                         # Scripts para carga y procesamiento de datos
+│   │   └── .gitkeep                  # (vacío - pendiente de implementación)
+│   │
 │   ├── features/                     # Ingeniería de características
-│   │   └── .gitkeep                 # (vacío - pendiente de implementación)
+│   │   └── .gitkeep                  # (vacío - pendiente de implementación)
 │   │
 │   ├── models/                       # Implementación de modelos ML/DL
-│   │   └── .gitkeep                 # (vacío - pendiente de implementación)
+│   │   └── .gitkeep                  # (vacío - pendiente de implementación)
 │   │
 │   └── utils/                        # Funciones utilitarias
-│       └── .gitkeep                 # (vacío - pendiente de implementación)
+│       └── .gitkeep                  # (vacío - pendiente de implementación)
 │
-└── docs/                             # Documentación de la tesis
-    └── .gitkeep                      # (vacío - pendiente de documentación)
+├── artifacts/                        # Resultados y artefactos del proyecto
+│   ├── models/                       # Modelos entrenados guardados
+│   │   └── .gitkeep                  # Mantener carpeta en git
+│   │
+│   ├── metrics/                      # Métricas de evaluación de modelos
+│   │   └── .gitkeep                  # Mantener carpeta en git
+│   │
+│   └── figures/                      # Gráficas y visualizaciones
+│       └── .gitkeep                  # Mantener carpeta en git
+│
+├── README.md                         # Documentación principal del proyecto
+├── requirements.txt                  # Dependencias de Python
+├── .gitignore                        # Archivos ignorados por Git
+├── .env.example                      # Ejemplo de variables de entorno
+├── LICENSE                           # Licencia MIT
+├── STRUCTURE.md                      # Este archivo de estructura
+└── .git/                             # Control de versiones Git
 ```
-
-## Descripción por Carpeta
-
-### 📁 `/data/`
-- **original/**: Datos crudos sin procesar
-  - Versiones completas (HI-Large) para análisis
-  - Muestras (muestra) para desarrollo y pruebas rápidas
-- **processed/**: Datos limpios y transformados listos para entrenar modelos
-
-### 📁 `/notebooks/`
-Jupyter Notebooks para:
-- Exploración de datos (EDA)
-- Análisis de desbalance de clases
-- Experimentos iniciales
-- Documentación del análisis
-
-### 📁 `/src/`
-Código fuente modular organizado en 3 módulos:
-- **features/**: Funciones para limpieza, transformación y generación de características
-- **models/**: Clases y funciones para entrenar/evaluar modelos (RF, XGBoost, NN)
-- **utils/**: Funciones auxiliares (visualizaciones, métricas, etc.)
-
-### 📁 `/docs/`
-Documentación de la tesis, artículos, referencias
-
-## Archivos Principales
-- `README.md` - Descripción del proyecto y cómo usar
-- `requirements.txt` - Librerías necesarias (pandas, scikit-learn, tensorflow, etc.)
-- `.env` - Variables de entorno (OpenAI API key, etc.)
-- `LICENSE` - Licencia MIT
-
-## Próximos Pasos para Completar
-- [ ] Implementar módulos en `/src/features/`
-- [ ] Implementar módulos en `/src/models/`
-- [ ] Implementar utilidades en `/src/utils/`
-- [ ] Ejecutar y documentar resultados de notebooks
-- [ ] Añadir documentación en `/docs/`

@@ -1,1 +1,10 @@
-pip install pandas as pd 
+polars
+pyarrow
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+jupyter
+ipykernel
+python-dotenv
