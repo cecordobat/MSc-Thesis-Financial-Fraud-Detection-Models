@@ -527,3 +527,57 @@ def finalize_transaction_columns(df: pd.DataFrame) -> pd.DataFrame:
     remaining_columns = [col for col in df.columns if col not in ordered_columns]
 
     return df[ordered_columns + remaining_columns]
+
+def summarize_fraud_by_category(
+    df: pd.DataFrame,
+    category_col: str,
+    target_col: str = "is_fraud",
+    min_count: int = 100,
+    top_n: int = 20,
+) -> pd.DataFrame:
+    """
+    Resume frecuencia, conteo de fraude y tasa de fraude por categoría.
+    Filtra categorías con bajo volumen para evitar conclusiones inestables.
+    """
+    summary = (
+        df
+        .groupby(category_col, dropna=False)
+        .agg(
+            count=(target_col, "size"),
+            fraud_count=(target_col, "sum"),
+            fraud_rate=(target_col, "mean"),
+        )
+        .reset_index()
+    )
+
+    summary = summary[summary["count"] >= min_count]
+
+    return (
+        summary
+        .sort_values("fraud_rate", ascending=False)
+        .head(top_n)
+        .reset_index(drop=True)
+    )
+
+def summarize_numeric_by_target(
+    df: pd.DataFrame,
+    numeric_col: str,
+    target_col: str = "is_fraud",
+) -> pd.DataFrame:
+    """
+    Resume una variable numérica agrupada por la variable objetivo.
+    """
+    return (
+        df
+        .groupby(target_col)[numeric_col]
+        .agg(
+            count="count",
+            mean="mean",
+            median="median",
+            std="std",
+            min="min",
+            max="max",
+        )
+        .reset_index()
+    )
+
