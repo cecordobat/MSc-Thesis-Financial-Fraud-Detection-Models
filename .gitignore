@@ -22,3 +22,6 @@ data/interim/*
 data/processed/*
 data/external/*
 
+# Ignorar los pkl y joblib - modelos
+*.joblib
+*.pkl
