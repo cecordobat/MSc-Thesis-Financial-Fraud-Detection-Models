@@ -1,0 +1,98 @@
+"""Plotting helpers for model evaluation outputs."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from sklearn.metrics import ConfusionMatrixDisplay, PrecisionRecallDisplay, RocCurveDisplay
+
+
+def _ensure_parent(output_path: str | Path) -> Path:
+    path = Path(output_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def plot_confusion_matrix(
+    confusion_values: np.ndarray,
+    labels: tuple[str, str] = ("No Fraud", "Fraud"),
+    title: str | None = None,
+    output_path: str | Path | None = None,
+) -> None:
+    """Plot and optionally save a confusion matrix heatmap."""
+
+    fig, ax = plt.subplots(figsize=(7, 5))
+    display = ConfusionMatrixDisplay(confusion_matrix=confusion_values, display_labels=list(labels))
+    display.plot(ax=ax, cmap="Blues", colorbar=False)
+    if title:
+        ax.set_title(title)
+    fig.tight_layout()
+    if output_path is not None:
+        fig.savefig(_ensure_parent(output_path), dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def plot_roc_curve(
+    y_true: pd.Series | np.ndarray,
+    scores: pd.Series | np.ndarray,
+    title: str | None = None,
+    output_path: str | Path | None = None,
+) -> None:
+    """Plot and optionally save a ROC curve."""
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    RocCurveDisplay.from_predictions(y_true, scores, ax=ax)
+    if title:
+        ax.set_title(title)
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    if output_path is not None:
+        fig.savefig(_ensure_parent(output_path), dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def plot_precision_recall_curve(
+    y_true: pd.Series | np.ndarray,
+    scores: pd.Series | np.ndarray,
+    title: str | None = None,
+    output_path: str | Path | None = None,
+) -> None:
+    """Plot and optionally save a precision-recall curve."""
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    PrecisionRecallDisplay.from_predictions(y_true, scores, ax=ax)
+    if title:
+        ax.set_title(title)
+    ax.grid(alpha=0.3)
+    fig.tight_layout()
+    if output_path is not None:
+        fig.savefig(_ensure_parent(output_path), dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def plot_feature_importance(
+    importance_frame: pd.DataFrame,
+    top_n: int = 20,
+    title: str | None = None,
+    output_path: str | Path | None = None,
+) -> None:
+    """Plot and optionally save a horizontal feature importance chart."""
+
+    plot_frame = importance_frame.copy().sort_values("importance", ascending=False).head(top_n)
+    fig, ax = plt.subplots(figsize=(10, max(5, 0.35 * len(plot_frame))))
+    sns.barplot(data=plot_frame, x="importance", y="feature", ax=ax, color="#1f77b4")
+    if title:
+        ax.set_title(title)
+    ax.grid(axis="x", alpha=0.3)
+    fig.tight_layout()
+    if output_path is not None:
+        fig.savefig(_ensure_parent(output_path), dpi=300, bbox_inches="tight")
+    plt.close(fig)
