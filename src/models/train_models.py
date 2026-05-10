@@ -11,6 +11,7 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline as SklearnPipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
@@ -18,6 +19,13 @@ try:
     from imblearn.pipeline import Pipeline as ImbPipeline
 except ModuleNotFoundError:  # pragma: no cover
     ImbPipeline = None
+
+try:
+    from imblearn.over_sampling import SMOTE
+    from imblearn.under_sampling import RandomUnderSampler
+except ModuleNotFoundError:  # pragma: no cover
+    SMOTE = None
+    RandomUnderSampler = None
 
 RANDOM_STATE = 42
 
@@ -391,9 +399,18 @@ def summarize_temporal_split_monthly_from_parquet(
     return pd.concat(monthly_frames, axis=0, ignore_index=True)
 
 
-def detect_target_column(columns: Sequence[str], preferred: str = "is_fraud") -> str:
+def _coerce_columns(columns: Sequence[str] | pd.DataFrame) -> list[str]:
+    """Normalize a dataframe or sequence into a list of column names."""
+
+    if isinstance(columns, pd.DataFrame):
+        return columns.columns.tolist()
+    return list(columns)
+
+
+def detect_target_column(columns: Sequence[str] | pd.DataFrame, preferred: str = "is_fraud") -> str:
     """Detect the target column name from a schema."""
 
+    columns = _coerce_columns(columns)
     if preferred in columns:
         return preferred
     candidates = [col for col in columns if col.lower() in {"target", "label", "fraud", "isfraud"}]
@@ -402,9 +419,10 @@ def detect_target_column(columns: Sequence[str], preferred: str = "is_fraud") ->
     return candidates[0]
 
 
-def detect_identifier_columns(columns: Sequence[str]) -> list[str]:
+def detect_identifier_columns(columns: Sequence[str] | pd.DataFrame) -> list[str]:
     """Return likely identifier/metadata columns that should not be used as predictors."""
 
+    columns = _coerce_columns(columns)
     known = {
         "user",
         "card",
@@ -422,10 +440,17 @@ def detect_identifier_columns(columns: Sequence[str]) -> list[str]:
     return [col for col in columns if col in known]
 
 
-def build_candidate_feature_columns(columns: Sequence[str], target_col: str, identifier_columns: Sequence[str]) -> list[str]:
+def build_candidate_feature_columns(
+    columns: Sequence[str] | pd.DataFrame,
+    target_col: str,
+    identifier_columns: Sequence[str] | None = None,
+    identifier_cols: Sequence[str] | None = None,
+) -> list[str]:
     """Return candidate predictor columns."""
 
-    excluded = set(identifier_columns) | {target_col}
+    columns = _coerce_columns(columns)
+    identifiers = list(identifier_columns or identifier_cols or [])
+    excluded = set(identifiers) | {target_col}
     return [col for col in columns if col not in excluded]
 
 
@@ -512,3 +537,60 @@ def build_hist_gradient_boosting_pipeline(
     preprocessor = build_preprocessor(numeric_features, categorical_features, scale_numeric=False)
     return make_estimator_pipeline(preprocessor, estimator)
 
+
+def build_random_undersample_logistic_pipeline(
+    numeric_features: Sequence[str],
+    categorical_features: Sequence[str] | None = None,
+):
+    """Create a logistic-regression pipeline with random undersampling."""
+
+    if RandomUnderSampler is None:
+        raise ModuleNotFoundError("imblearn is required for random undersampling pipelines.")
+
+    preprocessor = build_preprocessor(numeric_features, categorical_features, scale_numeric=True)
+    sampler = RandomUnderSampler(random_state=RANDOM_STATE)
+    estimator = LogisticRegression(max_iter=1000, random_state=RANDOM_STATE, solver="liblinear")
+    return make_resampling_pipeline(preprocessor, sampler, estimator)
+
+
+def build_smote_logistic_pipeline(
+    numeric_features: Sequence[str],
+    categorical_features: Sequence[str] | None = None,
+):
+    """Create a logistic-regression pipeline with SMOTE oversampling."""
+
+    if SMOTE is None:
+        raise ModuleNotFoundError("imblearn is required for SMOTE pipelines.")
+
+    preprocessor = build_preprocessor(numeric_features, categorical_features, scale_numeric=True)
+    sampler = SMOTE(random_state=RANDOM_STATE)
+    estimator = LogisticRegression(max_iter=1000, random_state=RANDOM_STATE, solver="liblinear")
+    return make_resampling_pipeline(preprocessor, sampler, estimator)
+
+
+def validate_modeling_dataset(
+    dataset_columns: Sequence[str] | pd.DataFrame,
+    required_columns: Sequence[str],
+) -> pd.DataFrame:
+    """Return a small validation summary for the modeling dataset schema."""
+
+    columns = _coerce_columns(dataset_columns)
+    missing_required_columns = sorted(set(required_columns) - set(columns))
+    duplicate_columns = pd.Index(columns)[pd.Index(columns).duplicated()].tolist()
+    summary = pd.DataFrame(
+        {
+            "validation_check": [
+                "n_columns",
+                "missing_required_columns",
+                "duplicate_column_names",
+                "required_columns_ok",
+            ],
+            "value": [
+                len(columns),
+                missing_required_columns,
+                duplicate_columns,
+                not missing_required_columns,
+            ],
+        }
+    )
+    return summary

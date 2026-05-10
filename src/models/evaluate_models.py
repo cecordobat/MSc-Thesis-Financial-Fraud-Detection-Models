@@ -29,6 +29,12 @@ def get_model_scores(model: object, x_frame: pd.DataFrame) -> pd.Series:
     return pd.Series(scores, index=x_frame.index, name="score")
 
 
+def get_positive_class_scores(model: object, x_frame: pd.DataFrame) -> pd.Series:
+    """Backward-compatible alias used by notebook code."""
+
+    return get_model_scores(model, x_frame)
+
+
 def evaluate_validation_thresholds(
     model: object,
     x_validation: pd.DataFrame,
@@ -105,9 +111,9 @@ __all__ = [
     "evaluate_classifier",
     "evaluate_validation_thresholds",
     "get_model_scores",
+    "get_positive_class_scores",
     "get_predicted_labels",
     "save_metrics_table",
     "save_threshold_table",
     "select_threshold",
 ]
-

@@ -14,6 +14,8 @@ import pandas as pd
 import seaborn as sns
 from sklearn.metrics import ConfusionMatrixDisplay, PrecisionRecallDisplay, RocCurveDisplay
 
+from src.utils.metrics import get_predicted_labels
+
 
 def _ensure_parent(output_path: str | Path) -> Path:
     path = Path(output_path)
@@ -22,12 +24,27 @@ def _ensure_parent(output_path: str | Path) -> Path:
 
 
 def plot_confusion_matrix(
-    confusion_values: np.ndarray,
-    labels: tuple[str, str] = ("No Fraud", "Fraud"),
+    confusion_values: np.ndarray | pd.Series,
+    labels: tuple[str, str] | pd.Series | np.ndarray = ("No Fraud", "Fraud"),
     title: str | None = None,
     output_path: str | Path | None = None,
+    threshold: float | None = None,
 ) -> None:
     """Plot and optionally save a confusion matrix heatmap."""
+
+    if threshold is not None and not (
+        isinstance(labels, tuple) and len(labels) == 2 and all(isinstance(item, str) for item in labels)
+    ):
+        y_true = np.asarray(confusion_values, dtype=int)
+        scores = np.asarray(labels, dtype=float)
+        y_pred = get_predicted_labels(scores, threshold=threshold)
+        confusion_values = np.array(
+            [
+                [((y_true == 0) & (y_pred == 0)).sum(), ((y_true == 0) & (y_pred == 1)).sum()],
+                [((y_true == 1) & (y_pred == 0)).sum(), ((y_true == 1) & (y_pred == 1)).sum()],
+            ]
+        )
+        labels = ("No Fraud", "Fraud")
 
     fig, ax = plt.subplots(figsize=(7, 5))
     display = ConfusionMatrixDisplay(confusion_matrix=confusion_values, display_labels=list(labels))
@@ -45,13 +62,15 @@ def plot_roc_curve(
     scores: pd.Series | np.ndarray,
     title: str | None = None,
     output_path: str | Path | None = None,
+    model_name: str | None = None,
 ) -> None:
     """Plot and optionally save a ROC curve."""
 
     fig, ax = plt.subplots(figsize=(8, 6))
     RocCurveDisplay.from_predictions(y_true, scores, ax=ax)
-    if title:
-        ax.set_title(title)
+    final_title = title or (f"ROC Curve - {model_name}" if model_name else None)
+    if final_title:
+        ax.set_title(final_title)
     ax.grid(alpha=0.3)
     fig.tight_layout()
     if output_path is not None:
@@ -64,13 +83,15 @@ def plot_precision_recall_curve(
     scores: pd.Series | np.ndarray,
     title: str | None = None,
     output_path: str | Path | None = None,
+    model_name: str | None = None,
 ) -> None:
     """Plot and optionally save a precision-recall curve."""
 
     fig, ax = plt.subplots(figsize=(8, 6))
     PrecisionRecallDisplay.from_predictions(y_true, scores, ax=ax)
-    if title:
-        ax.set_title(title)
+    final_title = title or (f"Precision-Recall Curve - {model_name}" if model_name else None)
+    if final_title:
+        ax.set_title(final_title)
     ax.grid(alpha=0.3)
     fig.tight_layout()
     if output_path is not None:
