@@ -117,3 +117,32 @@ def plot_feature_importance(
     if output_path is not None:
         fig.savefig(_ensure_parent(output_path), dpi=300, bbox_inches="tight")
     plt.close(fig)
+
+
+def plot_probability_distribution(
+    scores: pd.Series | np.ndarray,
+    y_true: pd.Series | np.ndarray,
+    threshold: float,
+    title: str | None = None,
+    output_path: str | Path | None = None,
+    bins: int = 60,
+) -> None:
+    """Plot and optionally save the predicted-probability distribution by class."""
+
+    scores_array = np.asarray(scores, dtype=float)
+    y_true_array = np.asarray(y_true, dtype=int)
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.hist(scores_array[y_true_array == 0], bins=bins, alpha=0.6, label="No Fraud", edgecolor="black")
+    ax.hist(scores_array[y_true_array == 1], bins=bins, alpha=0.6, label="Fraud", edgecolor="black")
+    ax.axvline(float(threshold), color="red", linestyle="--", linewidth=2.0, label=f"Threshold={threshold:.2f}")
+    ax.set_xlabel("Predicted Probability")
+    ax.set_ylabel("Frequency")
+    if title:
+        ax.set_title(title)
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.3, axis="y")
+    fig.tight_layout()
+    if output_path is not None:
+        fig.savefig(_ensure_parent(output_path), dpi=300, bbox_inches="tight")
+    plt.close(fig)
